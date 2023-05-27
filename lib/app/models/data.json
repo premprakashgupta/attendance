@@ -1,0 +1,10 @@
+{
+  "classId": "classId",
+  "classCode": "classCode",
+  "name": "name",
+  "createdBy": {
+    "regNo": "regNo",
+    "role": "role",
+    "username": "username"
+  }
+}
