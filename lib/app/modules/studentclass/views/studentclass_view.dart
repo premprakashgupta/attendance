@@ -1,11 +1,13 @@
 import 'package:attendance/app/data/students.dart';
 import 'package:attendance/app/modules/auth/controllers/auth_controller.dart';
 import 'package:attendance/app/routes/app_pages.dart';
+import 'package:attendance/utils/colors.dart';
 import 'package:attendance/widgets/caption_text.dart';
 import 'package:attendance/widgets/header_text.dart';
 import 'package:attendance/widgets/subHeader_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 
@@ -32,24 +34,20 @@ class StudentclassView extends GetView<StudentClassController> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Obx(
-              () => _studentClassController.isLoading.value
+              () => _authController.isLoading
                   ? const Center(
                       child: CircularProgressIndicator(),
                     )
                   : TextButton.icon(
                       onPressed: () {
-                        final role =
-                            _authController.userData!.values.first['role'];
-                        if (role == 'student') {
-                          _dialog(role: role);
-                        } else {
-                          // Handle 'Create' action
-                        }
+                        final role = _authController.userData!['role'];
+                        final user = _authController.userData!;
+
+                        _dialog(role: role, user: user);
                       },
                       icon: const Icon(Icons.add),
                       label: CustomeSubHeader(
-                        text: _authController.userData!.values.first['role'] ==
-                                'student'
+                        text: _authController.userData!['role'] == 'student'
                             ? "Join"
                             : "Create",
                       ),
@@ -62,91 +60,134 @@ class StudentclassView extends GetView<StudentClassController> {
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Obx(
-          () => _studentClassController.isLoading == true
+          () => _studentClassController.isLoading.value == true
               ? const Center(child: CircularProgressIndicator())
-              : Center(
-                  child: ListView.builder(
-                    itemCount: _studentClassController.classes.length,
-                    itemBuilder: (context, index) {
-                      var data = _studentClassController.classes[index];
+              : _studentClassController.classes.isEmpty
+                  ? const CustomeHeader(text: 'No Data Found')
+                  : Center(
+                      child: ListView.builder(
+                        itemCount: _studentClassController.classes.length,
+                        itemBuilder: (context, index) {
+                          Map<String, dynamic> data =
+                              _studentClassController.classes[index];
 
-                      return Card(
-                        child: Stack(children: [
-                          Container(
-                            height: 120,
-                            width: double.maxFinite,
-                            decoration: BoxDecoration(
-                              color: DataBase.classes[index]['background'] != ''
-                                  ? DataBase.classes[index]['background']
-                                  : Colors.transparent,
-                            ),
-                            child: DataBase.classes[index]['image'] != ''
-                                ? CachedNetworkImage(
-                                    fit: BoxFit.cover,
-                                    imageUrl: DataBase.classes[index]['image'])
-                                : null,
-                          ),
-                          Positioned(
-                            top: 10,
-                            left: 10,
-                            child: CustomeHeader(
-                              text: data['className'],
-                              color: Colors.white,
-                            ),
-                          ),
-                          const Positioned(
-                            top: 40,
-                            left: 10,
-                            child: CustomeSubHeader(
-                              text: '11:00 PM',
-                              color: Colors.white,
-                            ),
-                          ),
-                          Positioned(
-                            bottom: 10,
-                            right: 10,
-                            child: Row(
-                              children: [
-                                CustomeCaption(
-                                  text: data['classCode'].toString(),
+                          return Card(
+                            child: Stack(children: [
+                              Container(
+                                height: 140,
+                                width: double.maxFinite,
+                                decoration: BoxDecoration(
+                                  color: data['background'] != ''
+                                      ? Colors.blueAccent.shade400
+                                      : Colors.black45,
+                                ),
+                              ),
+                              Positioned(
+                                top: 10,
+                                left: 10,
+                                child: SizedBox(
+                                  width: 250,
+                                  child: CustomeHeader(
+                                    text: data['className'],
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                              const Positioned(
+                                bottom: 5,
+                                left: 5,
+                                child: CustomeSubHeader(
+                                  text: '11:00 PM',
                                   color: Colors.white,
                                 ),
-                                const Gap(10),
-                                CustomeCaption(
-                                  text: data['teacher']['username'],
-                                  color: Colors.white,
+                              ),
+                              Positioned(
+                                bottom: 5,
+                                right: 5,
+                                child: Row(
+                                  children: [
+                                    Column(
+                                      children: [
+                                        InkWell(
+                                          onTap: () async {
+                                            await Clipboard.setData(
+                                              ClipboardData(
+                                                text: data['classCode']
+                                                    .toString(),
+                                              ),
+                                            );
+                                            // copied successfully
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(
+                                              const SnackBar(
+                                                content:
+                                                    Text('copied successfully'),
+                                                duration: Duration(
+                                                    seconds:
+                                                        2), // Optional duration
+                                              ),
+                                            );
+                                          },
+                                          child: const Icon(
+                                            Icons.copy,
+                                            size: 17,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                        const CustomeCaption(
+                                          text: 'class code',
+                                          color: Colors.white,
+                                        ),
+                                      ],
+                                    ),
+                                    const Gap(10),
+                                    Column(
+                                      children: [
+                                        CustomeCaption(
+                                          text: data['teacher']['username'],
+                                          color: Colors.white,
+                                        ),
+                                        Text(
+                                          data['teacher']['username'],
+                                          style: const TextStyle(
+                                              fontSize: 10,
+                                              color: Colors.white),
+                                          maxLines: 1,
+                                        )
+                                      ],
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
-                          ),
-                          Positioned(
-                            child: _popUpmenu(),
-                            top: 10,
-                            right: 10,
-                          )
-                        ]),
-                      );
-                    },
-                  ),
-                ),
+                              ),
+                              Positioned(
+                                top: 10,
+                                right: 10,
+                                child: _popUpmenu(classCode: data['classCode']),
+                              )
+                            ]),
+                          );
+                        },
+                      ),
+                    ),
         ),
       ),
     );
   }
 
-  _dialog({required String role}) {
-    print(role);
+  _dialog({required String role, required Map<String, dynamic> user}) {
     return Get.defaultDialog(
       title: role == 'student' ? 'Join Class' : 'Create Class',
       onConfirm: () {
         if (role == 'student') {
+          _studentClassController.joinClass(
+              classCode: _className.text, user: user);
         } else {
           _studentClassController.createClass(
               className: _className.text, userData: _authController.userData);
         }
         _className.text = '';
+        Get.back();
       },
-      onCancel: () {},
       radius: 5,
       contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       content: Column(
@@ -167,7 +208,7 @@ class StudentclassView extends GetView<StudentClassController> {
     );
   }
 
-  Widget _popUpmenu() {
+  Widget _popUpmenu({required String classCode}) {
     return PopupMenuButton<SampleItem>(
       // Callback that sets the selected popup menu item.
       color: Colors.white,
@@ -182,7 +223,8 @@ class StudentclassView extends GetView<StudentClassController> {
             Get.toNamed(Routes.ASSIGNMENT);
             break;
           case SampleItem.attendance:
-            Get.toNamed(Routes.ATTENDANCE);
+            Get.toNamed(Routes.ATTENDANCE,
+                parameters: {'classCode': classCode});
             break;
         }
       },

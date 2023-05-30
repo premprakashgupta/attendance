@@ -3,13 +3,13 @@ import 'package:attendance/app/services/class_services.dart';
 import 'package:get/get.dart';
 
 class LandingController extends GetxController {
-  //TODO: Implement LandingController
+  //
   final ClassService _classService = ClassService();
   final AuthController _authController = Get.find<AuthController>();
 
   @override
   void onInit() {
-    print("object landing init");
+    _authController.setisLoading = true;
 
     super.onInit();
   }
@@ -21,11 +21,11 @@ class LandingController extends GetxController {
   }
 
   _userDataFnc() async {
-    print("userDataFnc");
     try {
       Map<String, dynamic>? res = await _classService.getUserdata();
-      print(res);
+
       _authController.setUserData = res ?? {};
+      _authController.setisLoading = false;
     } catch (e) {
       printError();
     }

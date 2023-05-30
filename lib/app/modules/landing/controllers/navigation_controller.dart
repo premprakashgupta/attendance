@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
 
 class NavigationController extends GetxController {
-  //TODO: Implement NavigationController
+  //
 
   final _currentIndex = 0.obs;
   get currentIndex => _currentIndex.value;
@@ -9,7 +9,8 @@ class NavigationController extends GetxController {
   @override
   void onClose() {
     // TODO: implement onClose
-    super.onClose();
+    _currentIndex.close();
     Get.delete<NavigationController>();
+    super.onClose();
   }
 }

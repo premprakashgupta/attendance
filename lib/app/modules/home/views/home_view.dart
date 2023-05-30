@@ -12,14 +12,12 @@ import 'package:attendance/utils/colors.dart';
 import 'package:attendance/widgets/subHeader_text.dart';
 import 'package:attendance/widgets/shadow_container.dart';
 
-import '../controllers/home_controller.dart';
-
-class HomeView extends GetView<HomeController> {
+class HomeView extends GetView<GetxController> {
   HomeView({Key? key}) : super(key: key);
   final SliderController _sliderController = Get.find<SliderController>();
   final AuthController _authController = Get.find<AuthController>();
+  final LandingController _landingController = Get.find<LandingController>();
 
-  final bool student = true;
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -71,16 +69,26 @@ class HomeView extends GetView<HomeController> {
                 }).toList(),
               ),
               const Gap(40),
-              CustomeData.student
-                  ? const SizedBox()
-                  : ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
-                        fixedSize: const Size.fromHeight(45),
-                      ),
-                      onPressed: () {},
-                      icon: const Icon(Icons.add),
-                      label: const Text('Create Class'),
-                    ),
+              SizedBox(
+                child: Obx(() {
+                  if (_authController.isLoading == true ||
+                      _authController.userData == null) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else {
+                    return _authController.userData!['role'].toString() ==
+                            'student'
+                        ? const SizedBox()
+                        : ElevatedButton.icon(
+                            style: ElevatedButton.styleFrom(
+                              fixedSize: const Size.fromHeight(45),
+                            ),
+                            onPressed: () {},
+                            icon: const Icon(Icons.add),
+                            label: const Text('Create Class'),
+                          );
+                  }
+                }),
+              ),
               const Gap(20),
               Padding(
                   padding:

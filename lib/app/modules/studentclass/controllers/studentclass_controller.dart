@@ -1,7 +1,8 @@
 import 'package:attendance/app/services/class_services.dart';
+import 'package:attendance/utils/colors.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
-import 'package:random_string/random_string.dart';
+import 'package:uuid/uuid.dart';
 
 class StudentClassController extends GetxController {
   final ClassService _classService = Get.find<ClassService>();
@@ -19,25 +20,30 @@ class StudentClassController extends GetxController {
     isLoading.value = true;
     errorMessage.value = '';
 
-    _classService.getClassesStream().listen(
-      (docs) async {
-        List<Map<String, dynamic>> temp = [];
-        for (var doc in docs) {
-          DocumentReference? reference = doc.get('teacher');
-          if (reference != null) {
-            DocumentSnapshot referencedDoc =
-                await _classService.getReferencedDocument(reference);
+    _classService.getClassStream().listen(
+      (doc) async {
+        List<Map<String, dynamic>> classesData = [];
+        if (!doc.exists) {
+          isLoading.value = false;
+          return;
+        }
+        for (var classRef in (doc.data() as Map)['classes']) {
+          DocumentSnapshot classSnapshot = await classRef.get();
 
-            Map<String, dynamic> docData = doc.data() as Map<String, dynamic>;
-            Map<String, dynamic> referencedDocData =
-                referencedDoc.data() as Map<String, dynamic>;
-            docData['teacher'] = referencedDocData;
-            // print(docData);
-            temp.add(docData);
-          }
+          Map<String, dynamic> classData =
+              classSnapshot.data() as Map<String, dynamic>;
+
+          DocumentReference teacherRef = classData['teacher'];
+          DocumentSnapshot teacherSnapshot = await teacherRef.get();
+
+          Map<String, dynamic> teacherData =
+              teacherSnapshot.data() as Map<String, dynamic>;
+
+          classData['teacher'] = teacherData;
+          classesData.add(classData);
         }
 
-        classes.value = temp;
+        classes.value = classesData;
         isLoading.value = false;
       },
       onError: (error) {
@@ -51,13 +57,20 @@ class StudentClassController extends GetxController {
     late Map<String, dynamic> data = {
       'className': className,
       'teacher': userData['userRef'],
-      'classCode': randomAlphaNumeric(5),
-      'image': ''
+      'classCode': const Uuid().v4(),
+      'background': CustomeColors.getRandomColor().toString()
     };
 
     try {
       _classService.createClass(data: data);
       classes.add({'className': className, 'teacher': userData});
+    } catch (e) {}
+  }
+
+  void joinClass(
+      {required String classCode, required Map<String, dynamic> user}) async {
+    try {
+      _classService.joinClass(classCode: classCode, user: user);
     } catch (e) {}
   }
 

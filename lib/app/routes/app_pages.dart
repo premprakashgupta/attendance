@@ -38,7 +38,7 @@ class AppPages {
     ),
     GetPage(
       name: _Paths.ATTENDANCE,
-      page: () => const AttendanceView(),
+      page: () => AttendanceView(),
       transition: Transition.leftToRightWithFade,
       transitionDuration: const Duration(milliseconds: 300),
       binding: AttendanceBinding(),
