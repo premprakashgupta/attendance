@@ -9,7 +9,7 @@ class ProfileController extends GetxController {
     try {
       await firebaseAuth.signOut();
 
-      Get.offNamed(Routes.LOGIN);
+      Get.offAllNamed(Routes.LOGIN);
     } catch (e) {
       // Handle logout error
       print('Logout error: $e');

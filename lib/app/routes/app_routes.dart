@@ -12,6 +12,7 @@ abstract class Routes {
   static const ASSIGNMENT = _Paths.ASSIGNMENT;
   static const PDFPAGE = _Paths.ASSIGNMENT + _Paths.PDFPAGE;
   static const AUTH = _Paths.AUTH;
+  static const SIGNUP = _Paths.SIGNUP;
 }
 
 abstract class _Paths {
@@ -24,4 +25,5 @@ abstract class _Paths {
   static const ASSIGNMENT = '/assignment';
   static const PDFPAGE = '/pdfpage';
   static const AUTH = '/auth';
+  static const SIGNUP = '/signup';
 }

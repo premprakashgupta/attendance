@@ -1,4 +1,3 @@
-import 'package:attendance/app/modules/auth/middleware/auth_middleware.dart';
 import 'package:get/get.dart';
 
 import '../modules/assignment/bindings/assignment_binding.dart';
@@ -7,11 +6,13 @@ import '../modules/assignment/pdfpage/views/pdfpage_view.dart';
 import '../modules/assignment/views/assignment_view.dart';
 import '../modules/attendance/bindings/attendance_binding.dart';
 import '../modules/attendance/views/attendance_view.dart';
-
+import '../modules/auth/middleware/auth_middleware.dart';
 import '../modules/landing/bindings/landing_binding.dart';
 import '../modules/landing/views/landing_view.dart';
 import '../modules/login/bindings/login_binding.dart';
 import '../modules/login/views/login_view.dart';
+import '../modules/signup/bindings/signup_binding.dart';
+import '../modules/signup/views/signup_view.dart';
 
 part 'app_routes.dart';
 
@@ -59,6 +60,11 @@ class AppPages {
           middlewares: [AuthGuardMiddleware()],
         ),
       ],
+    ),
+    GetPage(
+      name: _Paths.SIGNUP,
+      page: () => SignupView(),
+      binding: SignupBinding(),
     ),
   ];
 }

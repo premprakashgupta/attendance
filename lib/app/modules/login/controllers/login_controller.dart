@@ -12,9 +12,9 @@ class LoginController extends GetxController {
   void onReady() {
     super.onReady();
     if (_authController.currentUser != null) {
-      Get.toNamed(Routes.LANDING);
+      Get.offNamed(Routes.LANDING);
     } else {
-      Get.toNamed(Routes.LOGIN);
+      Get.offNamed(Routes.LOGIN);
     }
   }
 
@@ -28,7 +28,7 @@ class LoginController extends GetxController {
       _authController.setCurrentUser = userCredential.user;
 
       // User is signed in, perform any necessary actions
-      Get.offNamed(Routes.LANDING);
+      Get.offAllNamed(Routes.LANDING);
     } catch (e) {
       // Handle login error
       print('Login error: $e');

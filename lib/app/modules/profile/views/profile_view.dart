@@ -1,4 +1,8 @@
+import 'package:attendance/app/modules/auth/controllers/auth_controller.dart';
+import 'package:attendance/widgets/subHeader_text.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 
 import 'package:get/get.dart';
 
@@ -7,78 +11,73 @@ import '../controllers/profile_controller.dart';
 class ProfileView extends GetView<ProfileController> {
   ProfileView({Key? key}) : super(key: key);
   final ProfileController _profileController = Get.find<ProfileController>();
+  final AuthController _authController = Get.find<AuthController>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          Expanded(
-            flex: 1,
-            child: Container(
-              alignment: Alignment.center,
-              padding: const EdgeInsets.all(16.0),
-              child: const Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircleAvatar(
-                    radius: 50.0,
-                    // Replace with your avatar image
-                    backgroundImage: AssetImage('assets/avatar.png'),
-                  ),
-                  SizedBox(height: 16.0),
-                  Text(
-                    'John Doe',
-                    style: TextStyle(
-                      fontSize: 24.0,
-                      fontWeight: FontWeight.bold,
+        body: Obx(
+      () => _authController.isLoading
+          ? const Center(
+              child: CircularProgressIndicator(),
+            )
+          : Column(
+              children: [
+                Expanded(
+                  flex: 2,
+                  child: Container(
+                    alignment: Alignment.center,
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const CircleAvatar(
+                          radius: 50.0,
+                          // Replace with your avatar image
+                          backgroundImage: NetworkImage(
+                              "https://e7.pngegg.com/pngimages/84/165/png-clipart-united-states-avatar-organization-information-user-avatar-service-computer-wallpaper-thumbnail.png"),
+                        ),
+                        const Gap(16),
+                        CustomeSubHeader(
+                          text: _authController.userData!['username'],
+                        ),
+                        const Gap(8.0),
+                        const Text(
+                          'johndoe@example.com',
+                          style: TextStyle(
+                            fontSize: 16.0,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  SizedBox(height: 8.0),
-                  Text(
-                    'johndoe@example.com',
-                    style: TextStyle(
-                      fontSize: 16.0,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          Expanded(
-            flex: 2,
-            child: ListView.builder(
-              itemCount: 5, // Replace with the actual number of list items
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text('List Tile $index'),
+                ),
+                const Spacer(),
+                ListTile(
+                  leading: const Icon(Icons.settings_outlined),
+                  title: const Text('Settings'),
+                  trailing: const Icon(Icons.chevron_right_sharp),
                   onTap: () {
-                    // Perform action when the list tile is tapped
+                    // Perform action when the settings tile is tapped
                   },
-                );
-              },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.privacy_tip_outlined),
+                  title: const Text('Privacy'),
+                  trailing: const Icon(Icons.chevron_right_sharp),
+                  onTap: () {
+                    // Perform action when the privacy tile is tapped
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.logout_outlined),
+                  title: const Text('Logout'),
+                  onTap: () {
+                    // Perform logout action
+                    _profileController.logout();
+                  },
+                ),
+              ],
             ),
-          ),
-          ListTile(
-            title: const Text('Settings'),
-            onTap: () {
-              // Perform action when the settings tile is tapped
-            },
-          ),
-          ListTile(
-            title: const Text('Privacy'),
-            onTap: () {
-              // Perform action when the privacy tile is tapped
-            },
-          ),
-          ListTile(
-            title: const Text('Logout'),
-            onTap: () {
-              // Perform logout action
-              _profileController.logout();
-            },
-          ),
-        ],
-      ),
-    );
+    ));
   }
 }

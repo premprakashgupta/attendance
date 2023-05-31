@@ -23,7 +23,9 @@ class StudentClassController extends GetxController {
     _classService.getClassStream().listen(
       (doc) async {
         List<Map<String, dynamic>> classesData = [];
-        if (!doc.exists) {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+
+        if (data.isEmpty || !data.containsKey('classes')) {
           isLoading.value = false;
           return;
         }

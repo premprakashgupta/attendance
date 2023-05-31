@@ -6,4 +6,5 @@ class CustomeIcons {
   static IconData bluetoothAttendence = Icons.bluetooth_outlined;
   static IconData email = Icons.email_outlined;
   static IconData lock = Icons.lock_outline;
+  static IconData person = Icons.person_outline;
 }
