@@ -1,0 +1,6 @@
+-Deleting function for class
+-Updating function for class
+-work on reciept section
+-notification section
+-profile -> reset password, edit username etc.
+-work on assignment section in class
