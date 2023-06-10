@@ -1,11 +1,9 @@
-import 'package:attendance/app/data/students.dart';
 import 'package:attendance/app/modules/auth/controllers/auth_controller.dart';
 import 'package:attendance/app/routes/app_pages.dart';
 import 'package:attendance/utils/colors.dart';
 import 'package:attendance/widgets/caption_text.dart';
 import 'package:attendance/widgets/header_text.dart';
 import 'package:attendance/widgets/subHeader_text.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
@@ -60,7 +58,7 @@ class StudentclassView extends GetView<StudentClassController> {
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Obx(
-          () => _studentClassController.isLoading.value == true
+          () => _studentClassController.isLoading == true
               ? const Center(child: CircularProgressIndicator())
               : _studentClassController.classes.isEmpty
                   ? const CustomeHeader(text: 'No Data Found')
@@ -78,7 +76,8 @@ class StudentclassView extends GetView<StudentClassController> {
                                 width: double.maxFinite,
                                 decoration: BoxDecoration(
                                   color: data['background'] != ''
-                                      ? Colors.blueAccent.shade400
+                                      ? CustomeColors.getColorFromHexString(
+                                          data['background'])
                                       : Colors.black45,
                                 ),
                               ),
@@ -106,40 +105,39 @@ class StudentclassView extends GetView<StudentClassController> {
                                 right: 5,
                                 child: Row(
                                   children: [
-                                    Column(
-                                      children: [
-                                        InkWell(
-                                          onTap: () async {
-                                            await Clipboard.setData(
-                                              ClipboardData(
-                                                text: data['classCode']
-                                                    .toString(),
-                                              ),
-                                            );
-                                            // copied successfully
-                                            ScaffoldMessenger.of(context)
-                                                .showSnackBar(
-                                              const SnackBar(
-                                                content:
-                                                    Text('copied successfully'),
-                                                duration: Duration(
-                                                    seconds:
-                                                        2), // Optional duration
-                                              ),
-                                            );
-                                          },
-                                          child: const Icon(
-                                            Icons.copy,
-                                            size: 17,
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                                        const CustomeCaption(
-                                          text: 'class code',
-                                          color: Colors.white,
-                                        ),
-                                      ],
-                                    ),
+                                    _authController.userData!['role'] ==
+                                            'teacher'
+                                        ? TextButton.icon(
+                                            onPressed: () async {
+                                              await Clipboard.setData(
+                                                ClipboardData(
+                                                  text: data['classCode']
+                                                      .toString(),
+                                                ),
+                                              );
+                                              // copied successfully
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(
+                                                const SnackBar(
+                                                  content: Text(
+                                                      'copied successfully'),
+                                                  duration: Duration(
+                                                      seconds:
+                                                          2), // Optional duration
+                                                ),
+                                              );
+                                            },
+                                            icon: const Icon(
+                                              Icons.copy,
+                                              size: 17,
+                                              color: Colors.white,
+                                            ),
+                                            label: const CustomeCaption(
+                                              text: 'Class Code',
+                                              color: Colors.white,
+                                            ),
+                                          )
+                                        : const SizedBox(),
                                     const Gap(10),
                                     Column(
                                       children: [

@@ -9,11 +9,14 @@ class SignupController extends GetxController {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final AuthController _authController = Get.find<AuthController>();
   final selectedRole = 'student'.obs;
+  final _isLoading = false.obs;
+  get isLoading => _isLoading.value;
   Future<void> signupWithEmailPassword({
     required String email,
     required String password,
     required String username,
   }) async {
+    _isLoading.value = true;
     try {
       // Sign up the user with email and password
       UserCredential userCredential =
@@ -37,20 +40,27 @@ class SignupController extends GetxController {
 
       // Display success message
       Get.snackbar('Success', 'User signup successful');
-
+      _isLoading.value = false;
       // You can perform additional actions after signup if needed
       // For example, navigate to a different screen
       Get.offAllNamed(Routes.LANDING);
-    } catch (e) {
+    } on FirebaseException catch (e) {
       // Display error message
-      Get.snackbar('Error', 'User signup failed');
-      print(e.toString());
+      String errorMessage = e.message ?? 'An unknown error occurred';
+      const prefix = 'An unknown error occurred: FirebaseError: Firebase:';
+      if (errorMessage.startsWith(prefix)) {
+        errorMessage = errorMessage.substring(prefix.length);
+      }
+      // Handle login error
+      Get.snackbar('Sign up Error', errorMessage);
+      _isLoading.value = false;
     }
   }
 
   @override
   void onClose() {
     selectedRole.close();
+    _isLoading.close();
     super.onClose();
   }
 }

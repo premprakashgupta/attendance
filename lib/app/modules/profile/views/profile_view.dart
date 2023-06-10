@@ -1,6 +1,5 @@
 import 'package:attendance/app/modules/auth/controllers/auth_controller.dart';
 import 'package:attendance/widgets/subHeader_text.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 

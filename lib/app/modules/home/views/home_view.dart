@@ -1,5 +1,6 @@
 import 'package:attendance/app/modules/auth/controllers/auth_controller.dart';
 import 'package:attendance/app/modules/landing/controllers/landing_controller.dart';
+import 'package:attendance/app/modules/test.dart';
 import 'package:attendance/widgets/header_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -21,6 +22,7 @@ class HomeView extends GetView<GetxController> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    // return GlassyEqualizerLoader();
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(

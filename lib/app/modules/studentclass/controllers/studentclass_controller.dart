@@ -7,9 +7,9 @@ import 'package:uuid/uuid.dart';
 class StudentClassController extends GetxController {
   final ClassService _classService = Get.find<ClassService>();
   RxList<Map<String, dynamic>> classes = RxList<Map<String, dynamic>>([]);
-  RxBool isLoading = RxBool(false);
+  final RxBool _isLoading = RxBool(false);
   RxString errorMessage = RxString('');
-
+  get isLoading => _isLoading.value;
   @override
   void onInit() {
     super.onInit();
@@ -17,7 +17,7 @@ class StudentClassController extends GetxController {
   }
 
   void fetchClasses() {
-    isLoading.value = true;
+    _isLoading.value = true;
     errorMessage.value = '';
 
     _classService.getClassStream().listen(
@@ -46,16 +46,17 @@ class StudentClassController extends GetxController {
         }
 
         classes.value = classesData;
-        isLoading.value = false;
+        _isLoading.value = false;
       },
       onError: (error) {
         errorMessage.value = 'Error fetching classes: $error';
-        isLoading.value = false;
+        _isLoading.value = false;
       },
     );
   }
 
   void createClass({required String className, required dynamic userData}) {
+    _isLoading.value = true;
     late Map<String, dynamic> data = {
       'className': className,
       'teacher': userData['userRef'],
@@ -63,23 +64,22 @@ class StudentClassController extends GetxController {
       'background': CustomeColors.getRandomColor().toString()
     };
 
-    try {
-      _classService.createClass(data: data);
-      classes.add({'className': className, 'teacher': userData});
-    } catch (e) {}
+    _classService.createClass(data: data);
+    classes.add({'className': className, 'teacher': userData});
+    _isLoading.value = false;
   }
 
   void joinClass(
       {required String classCode, required Map<String, dynamic> user}) async {
-    try {
-      _classService.joinClass(classCode: classCode, user: user);
-    } catch (e) {}
+    _isLoading.value = true;
+    _classService.joinClass(classCode: classCode, user: user);
+    _isLoading.value = false;
   }
 
   @override
   void onClose() {
     classes.close();
-    isLoading.close();
+    _isLoading.close();
     errorMessage.close();
     super.onClose();
   }
